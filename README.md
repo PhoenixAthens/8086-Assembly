@@ -2,9 +2,9 @@
 Q1: What's the meaning of a `COM` template in x86 programming especially msDOS 8086 Assembly?
 
 A: The `.COM` file-format is a very simple executable file format used in MS-DOS and early version of Windows. Here are the key points about the `.COM` format:<br>
-1. **Simplicity**: The `.COM` format has no complex file structure or headers. If is simply a flat binary of the executable code and data.
+1. **Simplicity**: The `.COM` format has no complex file structure or headers. It is simply a flat binary of the executable code and data.
 2. **Memory Layuot**: When a `.COM` file is executed, the entire file is loaded into memory starting at address `0x0100`. The memory below `0x0100` is used for the Program Segment Prefix (PSP), which contains information about the program.
-3. **Entry Point**: The program execution always begins a the very first byte of the `.COM` file, which is located at address `0x0100`.
+3. **Entry Point**: The program execution always begins at the very first byte of the `.COM` file, which is located at address `0x0100`.
 4. **Memory Model**: `.COM` files are limited to a "tiny" memory model, meaning the entire program (code, data, and stack) must fit within a single 64KB segment of memory.
 5. **Registers**: When the `.COM` file starts executing, the CPU registers are set up such that `CS`, `DS`, `ES`, and `SS` all point to the same segment where the program is loaded.
 6. **Simplicity for Developers**: The simplicity of the `.COM` format made it easy for early assembly language programmers to create small, self-contained programs that could be easily distributed and executed on MS-DOS systems.
@@ -63,3 +63,27 @@ The reason for this specific structure is due to the way the `.COM` format works
 - The `ret` instruction at the end ensures that the program execution terminates and control is returned to the operating system.
 
 By following this structure, your 8086 assembly code can be properly executed as a standalone `.COM` file in the MS-DOS environment. The `org 100h` and `ret` lines are essential for ensuring the correct memory layout and program flow for the `.COM` format.
+
+---
+
+Let's understand the following assembly code
+```asm
+org 100h
+    mov ah, 0eh
+    mov al, 'A'
+    int 10h
+ret
+```
+This is a simple x86 assembly program that displays the letter 'A' on the screen.<br>
+Let's break down the code step by step:
+- `org 100h`: This directive sets the origin of the program to `100h` (hexadecimal), which is the standard starting address for a `COM` (Compact) executable file.
+- `mov ah, 0eh`: This instruction moves the value `0eh` (hexadecimal) into the `AH` register. The `AH` register is used to specify the function to be performed by the BIOS interrupt.
+- `mov al, 'A'`: This instruction is used to moves the ASCII value of the letter 'A' (which is 41h) into the `AL` register. The `AL` register is used to hold the character to be displayed.
+- `int 10h`: This instruction triggers the BIOS video interrupt (interrupt 10h). The BIOS video interrupt is responsible for handling all video-related operations, such as displaying characters on the screen. In this case, the combination of `AH=oeh` and `AL='A'`, tells the BIOS video interrupt to display the character 'A' on the screen using the current cursor position.
+- `ret`: this instruction returns control back to the operating system or the program that called this assembly code.
+
+When this program is executed, it will display the letter 'A' on the screen at the current cursor position. The cursor position may be the default position (usually the top-left corner of the screen) or a position that was set previously by the program of the operating system.
+
+This basic x86 assembly program demonstrates the use of BIOS interrupts to perform simple I/O operations on the computer's display.
+
+---
