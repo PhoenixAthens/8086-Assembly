@@ -87,3 +87,73 @@ When this program is executed, it will display the letter 'A' on the screen at t
 This basic x86 assembly program demonstrates the use of BIOS interrupts to perform simple I/O operations on the computer's display.
 
 ---
+Q4: Let's try to understand the following code, line by line
+```asm
+org 100h
+
+jmp main
+
+message:
+    db 'Hello World!', 0
+
+print:
+    mov ah, 0eh
+
+._loop:
+    lodsb
+    cmp al, 0
+    je .done
+    int 10h
+
+    jmp ._loop
+
+.done:
+    ret
+
+main:
+    mov si, message
+    call print
+
+ret
+```
+
+A:
+Let's go through the 8086 assembly code you provided line by line:
+
+1. `org 100h`: This is an assembler directive that sets the origin of the program to 100h (256 in decimal). This is the standard starting address for programs loaded by the BIOS in a DOS environment.
+
+2. `jmp main`: This is a jump instruction that transfers control to the `main` label. The reason for this is that if the assembler finds the `message` label first, it will try to execute the data there, which is not the intended behavior. By jumping to the `main` label first, we ensure that the program execution starts from the correct point.
+
+3. `message:` This is a label that marks the beginning of the data section. It is not a variable, but a label that the assembler uses to reference the data that follows.
+
+4. `db 'Hello, World', 0:` This is a directive that defines a sequence of bytes in memory. The `db` stands for `"define byte"`, and the string `'Hello World!'`  is followed by a null character `0`, which is used to indicate the end of the string.
+
+5. `print:` This is a label that marks the beginning of the `print` subroutine.
+
+6. `mov ah, 0eh`: This instruction moves the value `0eh` (14 in decimal) into the `ah` register. This value is a BIOS interrupt code that corresponds to the "teletype output" function, which is used to display a character on the screen.
+
+7. `._loop:`: This is a label that marks the beginning of the loop that prints the characters in the `message` string.
+
+8. `lodsb`: This instruction loads the byte at the memory address pointed to by the `si` register into the `al` register, and then increments the `si` register to point to the next byte.
+
+9. `cmp al, 0`: This instruction compares the value in the `al` register (the character just loaded) to the value `0` (the null character). If the values are equal, the `je` (jump if equal) instruction at the next line will be executed.
+
+10. `je .done`: This instruction jumps to the `.done` label if the comparison in the previous line was true (i.e., the character in `al` was the null character).
+
+11. `int 10h`: This instruction triggers BIOS interrupt `10h`, which is the video service interrupt. This will display the character in the `al` register on the screen.
+
+12. `jmp ._loop`: This instruction jumps back to the beginning of the loop at the `._loop` label, so that the next character in the `message` string can be printed.
+
+13. `.done:`: This is a label that marks the end of the `print` subroutine.
+
+14. `ret` This instruction returns from the `print` subroutine.
+
+15. `main:` This is a label that marks the beginning of the `main` subroutine.
+
+16. `mov si, message`: This instruction moves the address of the `message` label into the `si` register. This is done to prepare the `lodsb` instruction in the `print` subroutine to read the characters from the `message` string.
+
+17. `call print`: This instruction calls the `print` subroutine, which will print the `message` string to the screen.
+
+18. `ret`: This instruction returns from the `main` subroutine, effectively ending the program.
+
+In summary, the 8086 assembly code defines a simple program that prints the string "Hello World!" to the screen. The `jmp main` instruction at the beginning ensures that the program execution starts from the `main` subroutine, and the `print` subroutine is responsible for actually displaying the characters on the screen.
