@@ -157,3 +157,53 @@ Let's go through the 8086 assembly code you provided line by line:
 18. `ret`: This instruction returns from the `main` subroutine, effectively ending the program.
 
 In summary, the 8086 assembly code defines a simple program that prints the string "Hello World!" to the screen. The `jmp main` instruction at the beginning ensures that the program execution starts from the `main` subroutine, and the `print` subroutine is responsible for actually displaying the characters on the screen.
+
+---
+Q5: In the code above, is the `._loop:` subroutine, a subroutine inside `print:` subroutine? What's the difference between a label that starts with a `.` and one that doesn't like `message` and `.done`?
+
+A: In the following code
+```asm
+org 100h
+
+jmp main
+
+message:
+    db 'Hello World!', 0
+
+print:
+    mov ah, 0eh
+
+    ._loop:
+        lodsb
+        cmp al, 0
+        je .done
+        int 10h
+
+        jmp ._loop
+
+    .done:
+        ret
+
+main:
+    mov si, message
+    call print
+
+ret
+```
+`._loop:` is not a separate subroutine inside the `print:` subroutine. It is a label within the `print:` subroutine, used for creating a loop:
+
+The difference between labels that start with a period (`.`) and those that don't is primarily a matter of convention and scope:
+
+1. **Labels without a leading period (e.g., `message`, `print`, `main`)**: These labels are typically used for global symbols such as subroutine names, data sections, or entry points. They are visible throughout the entire assembly file and can be referenced from anywhere within the code.
+
+2. **Labels with a leading period (e.g., `._loop`, `.done`)**: These labels are considered local labels, and their scope is limited to the current section or subroutine in which they are defined. They are often used for loop labels, branch targets, or temporary labels within a subroutine or function.
+
+In the provided code, `._loop` and `.done` are local labels within the `print:` subroutine. They are used for controlling the loop and branching within the subroutine. The leading period (`.`) in their names indicates that they are local to the `print:` subroutine and are not visible or accessible from outside this subroutine.
+
+On the other hand, labels like `message`, `print`, and `main` are global labels that can be referenced from anywhere in the code.
+
+It's important to note that the use of leading periods for local labels is a convention, and different assemblers may have different rules or conventions for handling local labels. Some assemblers may treat all labels as global by default, while others may have specific syntax or directives for defining local labels.
+
+In general, using local labels with a leading period is a good practise for improving code organization and avoiding potential naming conflicts with global symbols. It helps to keep the scope of labels contained within their respective sections or subroutines, making the code more readable and maintainable.
+
+---
